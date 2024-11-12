@@ -21,15 +21,22 @@ For reads longer than 25 bp, adapter trimming is recommended to ensure accurate 
 Begin by inspecting the raw reads with `FastQC` to check for the presence of adapter sequences or any other quality issues. If adapters or other contaminants are detected, trim the reads using `fastp`. After trimming, run `FastQC` again on the cleaned reads to confirm successful removal of adapters and to ensure no quality flags remain.
 
 ```
-fastqc ${FASTA_R1} -t $CPUS --outdir=./res_fastqc/ --extract --quiet
-fastqc ${FASTA_R2} -t $CPUS --outdir=./res_fastqc/ --extract --quiet
+# Run FastQC on raw reads
+fastqc <read_1.fastq> -t $CPUS --outdir ./res_fastqc/ --extract --quiet
+fastqc <read_2.fastq> -t $CPUS --outdir ./res_fastqc/ --extract --quiet
 
-fastp -i ${FASTA_R1} -I ${FASTA_R2} \
-  -o ${OUTPUT_R1} -O ${OUTPUT_R2} \
-  --detect_adapter_for_pe --cut_front --cut_tail --cut_mean_quality 20 --length_required 50
+# Perform adapter trimming and quality filtering with fastp
+fastp -i <read_1.fastq> -I <read_2.fastq> \
+  -o <trimmed_read_1.fastq> -O <trimmed_read_2.fastq> \
+  --detect_adapter_for_pe \
+  --cut_front \
+  --cut_tail \
+  --cut_mean_quality 20 \
+  --length_required 50
 
-fastqc ${OUTPUT_R1} -t $CPUS --outdir=./res_fastqc/ --extract --quiet
-fastqc ${OUTPUT_R2} -t $CPUS --outdir=./res_fastqc/ --extract --quiet
+# Run FastQC on the trimmed reads
+fastqc <trimmed_read_1.fastq> -t $CPUS --outdir ./res_fastqc/ --extract --quiet
+fastqc <trimmed_read_2.fastq> -t $CPUS --outdir ./res_fastqc/ --extract --quiet
 ```
 
 ## Read Mapping
